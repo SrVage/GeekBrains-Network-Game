@@ -1,3 +1,4 @@
+using System;
 using PlayFab;
 using PlayFab.ClientModels;
 using TMPro;
@@ -9,6 +10,7 @@ namespace PlayfabProject
     public class Login:MonoBehaviour
     {
         private const string TILEID = "987E1";
+        private const string AUTHGUID = "authGuid";
         private const string ERRORTEXT = "Error";
         private const string SUCCESSTEXT = "Success";
         [SerializeField] private Button _loginButton;
@@ -21,12 +23,19 @@ namespace PlayfabProject
         {
             if (string.IsNullOrEmpty(PlayFabSettings.staticSettings.TitleId))
                 PlayFabSettings.staticSettings.TitleId = TILEID;
+            bool needCreation = !PlayerPrefs.HasKey(AUTHGUID);
+            var id = PlayerPrefs.GetString(AUTHGUID, Guid.NewGuid().ToString());
             var request = new LoginWithCustomIDRequest()
             {
-                CustomId = "Player1",
-                CreateAccount = true
+                CustomId = id,
+                CreateAccount = needCreation
             };
-            PlayFabClientAPI.LoginWithCustomID(request, OnLoginSuccess, OnLoginFailure);
+            PlayFabClientAPI.LoginWithCustomID(request, success=>
+            {
+                PlayerPrefs.SetString(AUTHGUID, id);
+                OnLoginSuccess(success);
+            }, 
+                OnLoginFailure);
         }
 
         private void OnLoginFailure(PlayFabError error)
