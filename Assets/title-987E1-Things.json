@@ -1,0 +1,161 @@
+{
+  "CatalogVersion": "Things",
+  "Catalog": [
+    {
+      "ItemId": "SteelSword",
+      "ItemClass": "Weapons",
+      "CatalogVersion": "Things",
+      "DisplayName": "Steel Sword",
+      "Description": "Ordinary steel sword. Sword has light weight.",
+      "VirtualCurrencyPrices": {
+        "GO": 500,
+        "BR": 5
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [
+        "sword"
+      ],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": null,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": true,
+      "IsStackable": false,
+      "IsTradable": true,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "HeavySteelSword",
+      "ItemClass": "Weapons",
+      "CatalogVersion": "Things",
+      "DisplayName": "Heavy Steel Sword",
+      "Description": "Heavy steel sword. Sword for strong warriors.",
+      "VirtualCurrencyPrices": {
+        "GO": 1000,
+        "BR": 10
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [
+        "sword",
+        "heavy"
+      ],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": null,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": true,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "Hat",
+      "ItemClass": "Armor",
+      "CatalogVersion": "Things",
+      "DisplayName": "Hat",
+      "Description": "Hat, which protect you against sun.",
+      "VirtualCurrencyPrices": {
+        "GO": 50
+      },
+      "RealCurrencyPrices": null,
+      "Tags": [
+        "armor"
+      ],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": null,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": true,
+      "IsStackable": false,
+      "IsTradable": true,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "Shield",
+      "ItemClass": "Armor",
+      "CatalogVersion": "Things",
+      "DisplayName": "Shield",
+      "Description": "Protect you against sword",
+      "VirtualCurrencyPrices": {
+        "GO": 200
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [
+        "armor"
+      ],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": null,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": true,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "StartPack",
+      "ItemClass": null,
+      "CatalogVersion": "Things",
+      "DisplayName": "Start Pack",
+      "Description": "Start pack for create hero",
+      "VirtualCurrencyPrices": {},
+      "RealCurrencyPrices": null,
+      "Tags": [
+        "start"
+      ],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": 1,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": {
+        "BundledItems": [
+          "SteelSword",
+          "Hat"
+        ],
+        "BundledResultTables": [],
+        "BundledVirtualCurrencies": {
+          "GO": 100
+        }
+      },
+      "CanBecomeCharacter": true,
+      "IsStackable": false,
+      "IsTradable": false,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": true,
+      "InitialLimitedEditionCount": 1,
+      "ActivatedMembership": null
+    }
+  ],
+  "DropTables": []
+}
