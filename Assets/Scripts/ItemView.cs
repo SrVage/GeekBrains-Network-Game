@@ -11,7 +11,7 @@ namespace DefaultNamespace
         [SerializeField] private TextMeshProUGUI _itemName;
         [SerializeField] private TextMeshProUGUI _description;
 
-        public void SetItem(Sprite sprite, string name, string description = null)
+        public void SetItem(Sprite sprite, string name, string description)
         {
             _image.sprite = sprite;
             _itemName.text = name;

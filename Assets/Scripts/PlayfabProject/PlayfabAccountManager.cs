@@ -37,21 +37,19 @@ namespace PlayfabProject
             foreach (var item in items)
             {
                 _catalog.Add(item.ItemId, item);
-                if (item.ItemClass == "Weapons")
-                {
-                    var itemView = Instantiate(_item.Prefab, _weapon);
-                    var sprite = _item.Items.First(i => i.ID == item.ItemId).Image;
-                    itemView.SetItem(sprite, item.DisplayName, item.Description);
-                }
-
-                if (item.ItemClass == "Armor")
-                {
-                    var itemView = Instantiate(_item.Prefab, _armor);
-                    var sprite = _item.Items.First(i => i.ID == item.ItemId).Image;
-                    itemView.SetItem(sprite, item.DisplayName, item.Description);
-                }
+                if (item.ItemClass == "Weapons") 
+                    CreateItem(item, _weapon);
+                if (item.ItemClass == "Armor") 
+                    CreateItem(item, _armor);
                 Debug.Log($"Catalog item {item.ItemId} was added successfully!");
             }
+        }
+
+        private void CreateItem(CatalogItem item, Transform parent)
+        {
+            var itemView = Instantiate(_item.Prefab, parent);
+            var sprite = _item.Items.First(i => i.ID == item.ItemId).Image;
+            itemView.SetItem(sprite, item.DisplayName, item.Description);
         }
 
         private void Forget() => 

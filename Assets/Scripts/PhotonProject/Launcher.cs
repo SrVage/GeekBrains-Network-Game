@@ -1,9 +1,7 @@
-using System;
 using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace PhotonProject
 {
@@ -12,12 +10,14 @@ namespace PhotonProject
         private const string GAMEVERSION = "1";
         private const string CONNECT = "Connect";
         private const string DISCONNECT = "Disconnect";
-        [SerializeField] private Button _connectButton;
+        [SerializeField] private ConnectButtonView _connectButton;
         [SerializeField] private TextMeshProUGUI _statusText;
+        private float _timer = 5f;
+        private bool _timerStart = false;
         private void Awake()
         {
             PhotonNetwork.AutomaticallySyncScene = true;
-            _connectButton.onClick.AddListener(ChangeConnectState);
+            _connectButton.ConnectButton.onClick.AddListener(ChangeConnectState);
         }
 
         private void ChangeConnectState()
@@ -38,8 +38,6 @@ namespace PhotonProject
                 PhotonNetwork.ConnectUsingSettings();
                 PhotonNetwork.GameVersion = GAMEVERSION;
             }
-            
-            Invoke(nameof(Disconnect), 5f);
         }
 
         private void Disconnect()
@@ -50,16 +48,29 @@ namespace PhotonProject
 
         public override void OnConnectedToMaster()
         {
-            _connectButton.GetComponentInChildren<TextMeshProUGUI>().text = DISCONNECT;
+            _connectButton.Status = DISCONNECT;
             _statusText.text = CONNECT;
             Debug.Log("Connect to master");
         }
 
         public override void OnDisconnected(DisconnectCause cause)
         {
-            _connectButton.GetComponentInChildren<TextMeshProUGUI>().text = CONNECT;
+            _connectButton.Status = CONNECT;
             _statusText.text = DISCONNECT;
             Debug.Log("Disconnect to master");
+        }
+
+        private void Update()
+        {
+            if (!_timerStart)
+                return;
+            _timer -= Time.deltaTime;
+            if (_timer <= 0)
+            {
+                _timerStart = false;
+                _timer = 5f;
+                Disconnect();
+            }
         }
     }
 }
