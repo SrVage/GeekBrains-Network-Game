@@ -49,7 +49,7 @@ namespace PlayfabProject
         {
             var itemView = Instantiate(_item.Prefab, parent);
             var sprite = _item.Items.First(i => i.ID == item.ItemId).Image;
-            itemView.SetItem(sprite, item.DisplayName, item.Description);
+            //itemView.SetItem(sprite, item.DisplayName, item.Description);
         }
 
         private void Forget() => 

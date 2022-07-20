@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using PlayFab;
+using PlayFab.ClientModels;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,6 +17,7 @@ namespace PlayfabProject
         [SerializeField] private InputField _passwordInputField;
         [SerializeField] private TextMeshProUGUI _loadingText;
         [SerializeField] private Button _backButton;
+        const string PlayerNamePrefKey = "PlayerName";
         protected string _username;
         protected string _password;
         private CancellationTokenSource _cancellationTokenSource;
@@ -70,7 +74,7 @@ namespace PlayfabProject
             _loadingText.enabled = false;
             SceneManager.LoadScene(1);
         }
-        
+
         protected async void Error(string error)
         {
             EndLoading();

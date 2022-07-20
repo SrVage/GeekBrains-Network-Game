@@ -21,4 +21,6 @@ MonoBehaviour:
     Image: {fileID: 21300000, guid: 696b2d003bccb456aaca00a50fa01f8e, type: 3}
   - ID: Shield
     Image: {fileID: 21300000, guid: 83a72a6c9e6544f0ea59674449ff54bf, type: 3}
+  - ID: Health
+    Image: {fileID: 21300000, guid: 64a5cbe8a532747fdb948a2ad4c2f35f, type: 3}
   Prefab: {fileID: 8781531569396589134, guid: e4f9c8d0e998b48038d5a6811faddb58, type: 3}

@@ -8,8 +8,15 @@
 // <author>developer@exitgames.com</author>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using PlayFab;
+using PlayFab.ClientModels;
+using PlayFab.SharedModels;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 namespace Photon.Pun.Demo.PunBasics
 {
@@ -33,6 +40,8 @@ namespace Photon.Pun.Demo.PunBasics
 
         #region Private Fields
 
+        private const string HEALTH = "health";
+
         [Tooltip("The Player's UI GameObject Prefab")]
         [SerializeField]
         private GameObject playerUiPrefab;
@@ -42,7 +51,8 @@ namespace Photon.Pun.Demo.PunBasics
         private GameObject beams;
 
         //True, when the user is firing
-        bool IsFiring;
+        private bool _isFiring;
+        private string _healthID;
 
         #endregion
 
@@ -53,13 +63,13 @@ namespace Photon.Pun.Demo.PunBasics
         /// </summary>
         public void Awake()
         {
-            if (this.beams == null)
+            if (beams == null)
             {
                 Debug.LogError("<Color=Red><b>Missing</b></Color> Beams Reference.", this);
             }
             else
             {
-                this.beams.SetActive(false);
+                beams.SetActive(false);
             }
 
             // #Important
@@ -68,7 +78,7 @@ namespace Photon.Pun.Demo.PunBasics
             {
                 LocalPlayerInstance = gameObject;
             }
-
+            GetInventory();
             // #Critical
             // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
             DontDestroyOnLoad(gameObject);
@@ -94,30 +104,67 @@ namespace Photon.Pun.Demo.PunBasics
             }
 
             // Create the UI
-            if (this.playerUiPrefab != null)
+            if (playerUiPrefab != null)
             {
-                GameObject _uiGo = Instantiate(this.playerUiPrefab);
+                GameObject _uiGo = Instantiate(playerUiPrefab);
                 _uiGo.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
             }
             else
             {
                 Debug.LogWarning("<Color=Red><b>Missing</b></Color> PlayerUiPrefab reference on player Prefab.", this);
             }
-
+            PlayFabClientAPI.GetAccountInfo(new GetAccountInfoRequest(), Success, Error );
+            
             #if UNITY_5_4_OR_NEWER
             // Unity 5.4 has a new scene management. register a method to call CalledOnLevelWasLoaded.
-			UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+			SceneManager.sceneLoaded += OnSceneLoaded;
             #endif
+        }
+        
+        private void Error(PlayFabError error) => 
+            Debug.Log(error.GenerateErrorReport());
+
+        private void Success(GetAccountInfoResult success)
+        {
+            var accountInfo = success.AccountInfo;
+            GetUserData(accountInfo.PlayFabId);
+        }
+
+        void GetUserData(string myPlayFabId) {
+            PlayFabClientAPI.GetUserData(new GetUserDataRequest() {
+                PlayFabId = myPlayFabId,
+                Keys = null
+            }, result => {
+                Debug.Log("Got user data:");
+                if (result.Data == null || !result.Data.ContainsKey(HEALTH))
+                    CreateHealthData(1);
+                else
+                    Health = float.Parse(result.Data[HEALTH].Value);
+            }, (error) => {
+                Debug.Log("Got error retrieving user data:");
+                Debug.Log(error.GenerateErrorReport());
+            });
+        }
+        
+        void CreateHealthData(int value) {
+            PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest() {
+                    Data = new Dictionary<string, string>() {
+                        {HEALTH, value.ToString()},
+                    } },
+                result => Debug.Log("Successfully updated user data"),
+                error => {
+                    Debug.Log(error.GenerateErrorReport());
+                });
         }
 
 
-		public override void OnDisable()
+        public override void OnDisable()
 		{
 			// Always call the base to remove callbacks
 			base.OnDisable ();
 
 			#if UNITY_5_4_OR_NEWER
-			UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
+			SceneManager.sceneLoaded -= OnSceneLoaded;
 			#endif
 		}
 
@@ -133,17 +180,17 @@ namespace Photon.Pun.Demo.PunBasics
             // we only process Inputs and check health if we are the local player
             if (photonView.IsMine)
             {
-                this.ProcessInputs();
+                ProcessInputs();
 
-                if (this.Health <= 0f)
+                if (Health <= 0f)
                 {
                     GameManager.Instance.LeaveRoom();
                 }
             }
 
-            if (this.beams != null && this.IsFiring != this.beams.activeInHierarchy)
+            if (beams != null && _isFiring != beams.activeInHierarchy)
             {
-                this.beams.SetActive(this.IsFiring);
+                beams.SetActive(_isFiring);
             }
         }
 
@@ -168,7 +215,7 @@ namespace Photon.Pun.Demo.PunBasics
                 return;
             }
 
-            this.Health -= 0.1f;
+            Health -= 0.1f;
         }
 
         /// <summary>
@@ -192,7 +239,7 @@ namespace Photon.Pun.Demo.PunBasics
             }
 
             // we slowly affect health when beam is constantly hitting us, so player has to move to prevent death.
-            this.Health -= 0.1f*Time.deltaTime;
+            Health -= 0.1f*Time.deltaTime;
         }
 
 
@@ -219,7 +266,7 @@ namespace Photon.Pun.Demo.PunBasics
                 transform.position = new Vector3(0f, 5f, 0f);
             }
 
-            GameObject _uiGo = Instantiate(this.playerUiPrefab);
+            GameObject _uiGo = Instantiate(playerUiPrefab);
             _uiGo.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
         }
 
@@ -229,9 +276,9 @@ namespace Photon.Pun.Demo.PunBasics
 
 
 		#if UNITY_5_4_OR_NEWER
-		void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode loadingMode)
+		void OnSceneLoaded(Scene scene, LoadSceneMode loadingMode)
 		{
-			this.CalledOnLevelWasLoaded(scene.buildIndex);
+			CalledOnLevelWasLoaded(scene.buildIndex);
 		}
 		#endif
 
@@ -249,38 +296,69 @@ namespace Photon.Pun.Demo.PunBasics
                     //	return;
                 }
 
-                if (!this.IsFiring)
+                if (!_isFiring)
                 {
-                    this.IsFiring = true;
+                    _isFiring = true;
                 }
             }
 
             if (Input.GetButtonUp("Fire1"))
             {
-                if (this.IsFiring)
+                if (_isFiring)
                 {
-                    this.IsFiring = false;
+                    _isFiring = false;
                 }
+            }
+
+            if (Input.GetKeyDown(KeyCode.F))
+            { 
+                ConsumePotion();
             }
         }
 
         #endregion
 
         #region IPunObservable implementation
+        
+        void GetInventory() {
+            PlayFabClientAPI.GetUserInventory(new GetUserInventoryRequest(), result=>LogSuccessInventory(result.Inventory),
+                LogFailure);
+        }
+
+        private void LogSuccessInventory(List<ItemInstance> resultInventory) => 
+            _healthID = resultInventory.First(k => k.ItemId == "Health").ItemInstanceId;
+
+
+        void ConsumePotion() {
+            PlayFabClientAPI.ConsumeItem(new ConsumeItemRequest {
+                ConsumeCount = 1,
+ItemInstanceId = _healthID
+            }, LogSuccess, LogFailure);
+        }
+        
+        void LogSuccess(PlayFabResultCommon result)
+        {
+            Health += 1;
+            var requestName = result.Request.GetType().Name;
+            Debug.Log(requestName + " successful");
+        }
+        void LogFailure(PlayFabError error) {
+            Debug.LogError(error.GenerateErrorReport());
+        }
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
             if (stream.IsWriting)
             {
                 // We own this player: send the others our data
-                stream.SendNext(this.IsFiring);
-                stream.SendNext(this.Health);
+                stream.SendNext(_isFiring);
+                stream.SendNext(Health);
             }
             else
             {
                 // Network player, receive data
-                this.IsFiring = (bool)stream.ReceiveNext();
-                this.Health = (float)stream.ReceiveNext();
+                _isFiring = (bool)stream.ReceiveNext();
+                Health = (float)stream.ReceiveNext();
             }
         }
 
