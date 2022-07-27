@@ -12,7 +12,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 using Photon.Realtime;
-using Unity.Plastic.Newtonsoft.Json.Serialization;
 
 namespace Photon.Pun.Demo.PunBasics
 {
