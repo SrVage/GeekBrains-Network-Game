@@ -37,33 +37,27 @@ namespace PlayfabProject
                 return;
             int fightResult = Random.Range(0, 100);
             if (fightResult < 50) 
-                Loose();
+                FightResult(false);
             else
-                Win();
+                FightResult(true);
         }
 
-        private void Win()
+        private void FightResult(bool win)
         {
+            int xp = win ? 10 : 1;
             if (_currentPlayer != null) 
-                _characterInfos[(int) _currentPlayer].XP += 10;
-            _fightResult.text = "Win. + 10 XP";
-            CheckLevel();
-        }
-
-        private void Loose()
-        {
-            if (_currentPlayer != null) 
-                _characterInfos[(int) _currentPlayer].XP += 1;
-            _fightResult.text = "Loose. + 1 XP";
+                _characterInfos[(int) _currentPlayer].XP += xp;
+            _fightResult.text = $"Win. + {xp} XP";
             CheckLevel();
         }
 
         private void CheckLevel()
         {
-            if (_characterInfos[(int) _currentPlayer].XP >= _characterInfos[(int) _currentPlayer].Level * 50)
+            int changeXP = _characterInfos[(int) _currentPlayer].Level * 50;
+            if (_characterInfos[(int) _currentPlayer].XP >= changeXP)
             {
                 _characterInfos[(int) _currentPlayer].Level++;
-                _characterInfos[(int) _currentPlayer].XP -= _characterInfos[(int) _currentPlayer].Level * 50;
+                _characterInfos[(int) _currentPlayer].XP -= changeXP;
             }
             Save();
             Invoke(nameof(ResetText), 2f);
@@ -89,10 +83,7 @@ namespace PlayfabProject
         {
             for (int i = 0; i < _playerSlots.Length; i++)
             {
-                if (_currentPlayer!=i)
-                    _playerSlots[i].Select(false);
-                else
-                    _playerSlots[i].Select(true);
+                _playerSlots[i].Select(_currentPlayer == i);
             }
         }
 
